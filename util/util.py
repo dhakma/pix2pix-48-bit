@@ -4,6 +4,7 @@ import torch
 import numpy as np
 from PIL import Image
 import os
+import cv2
 
 
 def tensor2im(input_image, imtype=np.uint8):
@@ -21,7 +22,13 @@ def tensor2im(input_image, imtype=np.uint8):
         image_numpy = image_tensor[0].cpu().float().numpy()  # convert it into a numpy array
         if image_numpy.shape[0] == 1:  # grayscale to RGB
             image_numpy = np.tile(image_numpy, (3, 1, 1))
-        image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0  # post-processing: tranpose and scaling
+        #image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0  # post-processing: tranpose and scaling
+        if (imtype == np.uint8):
+            image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0  # post-processing: tranpose and scaling
+        elif (imtype == np.uint16):
+            image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 65535.0  # post-processing: tranpose and scaling
+        else:
+            raise Exception("Unsupported output format: not 8 bit or 16 bit")
     else:  # if it is a numpy array, do nothing
         image_numpy = input_image
     return image_numpy.astype(imtype)
@@ -44,6 +51,9 @@ def diagnose_network(net, name='network'):
         mean = mean / count
     print(name)
     print(mean)
+
+def save_image_cv2(image_numpy, image_path):
+    cv2.imwrite(image_path, image_numpy);
 
 
 def save_image(image_numpy, image_path):

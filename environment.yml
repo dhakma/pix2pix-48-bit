@@ -2,6 +2,7 @@ name: pytorch-CycleGAN-and-pix2pix
 channels:
 - peterjc123
 - defaults
+- pytorch
 dependencies:
 - python=3.5.5
 - pytorch=0.4

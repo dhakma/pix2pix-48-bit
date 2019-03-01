@@ -78,6 +78,18 @@ def get_params(opt, size):
     return {'crop_pos': (x, y), 'flip': flip}
 
 
+def get_transform_cv2(opt, convert=True):
+    transform_list = []
+    if convert:
+        transform_list += [
+                           transforms.Normalize((0.5, 0.5, 0.5),
+                                                (0.5, 0.5, 0.5))]
+        # transform_list += [transforms.ToTensor(),
+        #                    transforms.Normalize((0.5, 0.5, 0.5),
+        #                                         (0.5, 0.5, 0.5))]
+    return transforms.Compose(transform_list)
+
+
 def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, convert=True):
     transform_list = []
     if grayscale:

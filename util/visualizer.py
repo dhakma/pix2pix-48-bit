@@ -13,7 +13,7 @@ else:
     VisdomExceptionBase = ConnectionError
 
 
-def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
+def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256, is_16_bit=False):
     """Save images to the disk.
 
     Parameters:
@@ -33,7 +33,7 @@ def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
     ims, txts, links = [], [], []
 
     for label, im_data in visuals.items():
-        im = util.tensor2im(im_data)
+        im = util.tensor2im(im_data, np.uint16 if is_16_bit else np.uint8)
         image_name = '%s_%s.png' % (name, label)
         save_path = os.path.join(image_dir, image_name)
         h, w, _ = im.shape
@@ -41,8 +41,8 @@ def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
             im = imresize(im, (h, int(w * aspect_ratio)), interp='bicubic')
         if aspect_ratio < 1.0:
             im = imresize(im, (int(h / aspect_ratio), w), interp='bicubic')
-        util.save_image(im, save_path)
-
+        #util.save_image(im, save_path)
+        util.save_image_cv2(im, save_path,)
         ims.append(image_name)
         txts.append(label)
         links.append(image_name)
@@ -72,6 +72,7 @@ class Visualizer():
         self.name = opt.name
         self.port = opt.display_port
         self.saved = False
+        self.is_16_bit = opt.bit16
         if self.display_id > 0:  # connect to a visdom server given <display_port> and <display_server>
             import visdom
             self.ncols = opt.display_ncols

@@ -9,6 +9,7 @@ import torch.utils.data as data
 from PIL import Image
 import os
 import os.path
+import numpy as np
 
 IMG_EXTENSIONS = [
     '.jpg', '.JPG', '.jpeg', '.JPEG',
@@ -33,6 +34,7 @@ def make_dataset(dir, max_dataset_size=float("inf")):
 
 
 def default_loader(path):
+    # debug code to check for 16 bit
     return Image.open(path).convert('RGB')
 
 
