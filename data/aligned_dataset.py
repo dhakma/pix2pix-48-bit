@@ -5,7 +5,7 @@ import torchvision.transforms as transforms
 from data.image_folder import make_dataset
 from PIL import Image
 import numpy as np
-import png
+#import png
 import itertools
 import cv2
 import torch
