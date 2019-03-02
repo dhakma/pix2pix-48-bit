@@ -1,6 +1,9 @@
 <img src='imgs/horse2zebra.gif' align="right" width=384>
 
 <br><br><br>
+# Support for 48-bit PNG in pix2pix
+
+This fork of the repository introduces the option of using 48-bit PNGs to pix2pix and cycleGAN. The image resize and cropping options are not supported at the momeny. But, if you have 48-bit PNG images, they can be read and written. This repo uses opencv for this functionality as Pillow does not support this image format. You can install opencv by [conda install -c conda-forge opencv](https://anaconda.org/conda-forge/opencv).
 
 # CycleGAN and pix2pix in PyTorch
 
