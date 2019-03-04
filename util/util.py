@@ -53,22 +53,22 @@ def diagnose_network(net, name='network'):
     print(mean)
 
 def save_image_cv2(image_numpy, image_path):
-    dirs = image_path.rsplit('\\', 1);
-    dir = dirs[0]
-    full_name = dirs[1]
+    # dirs = image_path.rsplit('\\', 1);
+    # dir = dirs[0]
+    # full_name = dirs[1]
 
-    parts = full_name.rsplit('.', 1);
-    name = parts[0]
-    ext = parts[1]
+    # parts = full_name.rsplit('.', 1);
+    # name = parts[0]
+    # ext = parts[1]
 
 
-    B_r = image_numpy[:,:,2]
-    B_g = image_numpy[:,:,1]
-    B_b = image_numpy[:,:,0]
+    # B_r = image_numpy[:,:,2]
+    # B_g = image_numpy[:,:,1]
+    # B_b = image_numpy[:,:,0]
 
-    cv2.imwrite(dir + '/preview/' + name + '_B_r.' + ext, B_r.astype(image_numpy.dtype))
-    cv2.imwrite(dir + '/preview/' + name + '_B_g.' + ext, B_g.astype(image_numpy.dtype))
-    cv2.imwrite(dir + '/preview/' + name + '_B_b.' + ext, B_b.astype(image_numpy.dtype))
+    # cv2.imwrite(dir + '/preview/' + name + '_B_r.' + ext, B_r.astype(image_numpy.dtype))
+    # cv2.imwrite(dir + '/preview/' + name + '_B_g.' + ext, B_g.astype(image_numpy.dtype))
+    # cv2.imwrite(dir + '/preview/' + name + '_B_b.' + ext, B_b.astype(image_numpy.dtype))
 
     bgr = image_numpy[..., ::-1]
 

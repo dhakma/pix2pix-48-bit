@@ -152,13 +152,13 @@ class AlignedDataset(BaseDataset):
         #
         #
 
-        dirs = AB_path.rsplit('\\', 1);
-        dir = dirs[0]
-        full_name = dirs[1]
+        # dirs = AB_path.rsplit('\\', 1);
+        # dir = dirs[0]
+        # full_name = dirs[1]
 
-        parts = full_name.rsplit('.', 1);
-        name = parts[0]
-        ext = parts[1]
+        # parts = full_name.rsplit('.', 1);
+        # name = parts[0]
+        # ext = parts[1]
 
         # cv2.imwrite(dir + '/preview/' + name + '_B_r.' + ext, B_r.astype(np.uint16))
         # cv2.imwrite(dir + '/preview/' + name + '_B_g.' + ext, B_g.astype(np.uint16))
