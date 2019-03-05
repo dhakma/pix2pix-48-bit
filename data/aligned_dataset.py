@@ -107,8 +107,8 @@ class AlignedDataset(BaseDataset):
         B_g = B_numpy[:,:,1]
         B_b = B_numpy[:,:,0]
 
-        print("Opening images as 16bit : ", self.opt.is_16_bit);
-        print("Max val of A, B : ", np.amax(A_numpy), np.amax(B_numpy));
+        # print("Opening images as 16bit : ", self.opt.is_16_bit);
+        # print("Max val of A, B : ", np.amax(A_numpy), np.amax(B_numpy));
 
         #float_img = cv2_img.astype(float)
         #AB = Image.fromarray(float_img)

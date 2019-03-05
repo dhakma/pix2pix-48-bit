@@ -4,6 +4,7 @@ import glob
 #import random
 import numpy as np
 import shutil
+import sys
 
 files_to_copy='*.png'
 train_dir='train'
@@ -41,8 +42,21 @@ if not os.path.exists(valid_dir):
 if not os.path.exists(test_dir):
    os.mkdir(test_dir)
 
+is_thresholded = False
+threshold_num = 0;
+if (len(sys.argv) > 1):
+   is_thresholded = True
+   threshold_num = int(sys.argv[1])
+
+cnt = 0;
 for f in train_files:
    shutil.copy(f, train_dir)
+   cnt += 1
+   if is_thresholded:
+      if (cnt >= threshold_num):
+         break
+
+print(threshold_num, 'copied ', cnt, ' files...')
 
 for f in valid_files:
    shutil.copy(f, valid_dir)
