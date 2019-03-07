@@ -8,7 +8,7 @@ import sys
 
 files_to_copy='*.png'
 train_dir='train'
-valid_dir='valid'
+valid_dir='val'
 test_dir='test'
 
 seed=4
