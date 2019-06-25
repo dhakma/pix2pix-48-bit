@@ -11,4 +11,4 @@ class TorchVecLoss(nn.Module):
     #     return torch.sum((x - y).pow(2).sum(1))
 
     def forward(self, x, y):
-        return torch.sum(torch.sqrt((x - y).pow(2).sum(1)))
+        return torch.sum(((x - y).pow(2).sum(1)))

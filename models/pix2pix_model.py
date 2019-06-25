@@ -34,6 +34,7 @@ class Pix2PixModel(BaseModel):
         if is_train:
             parser.set_defaults(pool_size=0, gan_mode='vanilla')
             parser.add_argument('--lambda_L1', type=float, default=100.0, help='weight for L1 loss')
+            parser.add_argument('--lambda_VecLoss', type=float, default=1.0, help='weight for Vec loss')
 
         return parser
 
@@ -112,7 +113,7 @@ class Pix2PixModel(BaseModel):
         # Second, G(A) = B
         self.loss_G_L1 = self.criterionL1(self.fake_B, self.real_B) * self.opt.lambda_L1
 
-        self.loss_G_VecLoss = self.criterionVecLoss(self.fake_B, self.real_B) * self.opt.lambda_L1
+        self.loss_G_VecLoss = self.criterionVecLoss(self.fake_B, self.real_B) * self.opt.lambda_VecLoss
         # combine loss and calculate gradients
         #self.loss_G = self.loss_G_GAN + self.loss_G_L1
         self.loss_G = self.loss_G_GAN + self.loss_G_VecLoss
