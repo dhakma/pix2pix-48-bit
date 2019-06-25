@@ -6,6 +6,8 @@ import time
 from . import util, html
 from subprocess import Popen, PIPE
 from scipy.misc import imresize
+from models.TrajLoss import TrajLoss
+from traj.TrajViz import TrajViz
 
 if sys.version_info[0] == 2:
     VisdomExceptionBase = Exception
@@ -92,6 +94,9 @@ class Visualizer():
             now = time.strftime("%c")
             log_file.write('================ Training Loss (%s) ================\n' % now)
 
+        self.tl = TrajLoss()
+        self.tviz = TrajViz()
+
     def reset(self):
         """Reset the self.saved status"""
         self.saved = False
@@ -127,9 +132,10 @@ class Visualizer():
                 images = []
                 idx = 0
                 for label, image in visuals.items():
-                    image_numpy = util.tensor2im(image)
-                    image_numpy = image_numpy if self.is_vector_mode else image_numpy
+                    image_numpy = util.tensor2im(image, np.uint16)
                     label_html_row += '<td>%s</td>' % label
+                    image_numpy = self.tviz.viz_traj_from_vecseq_img(image_numpy) if self.is_vector_mode and (label.find("_B") > 0) else image_numpy
+                    image_numpy = (image_numpy / 255.0).astype(np.uint8) if image_numpy.dtype == np.uint16 else image_numpy
                     images.append(image_numpy.transpose([2, 0, 1]))
                     idx += 1
                     if idx % ncols == 0:
@@ -166,7 +172,9 @@ class Visualizer():
             self.saved = True
             # save images to the disk
             for label, image in visuals.items():
-                image_numpy = util.tensor2im(image)
+                image_numpy = util.tensor2im(image, np.uint16)
+                image_numpy = self.tviz.viz_traj_from_vecseq_img(image_numpy) if (self.is_vector_mode and (label.find("_B") > 0)) else image_numpy
+                image_numpy = (image_numpy / 255.0).astype(np.uint8) if image_numpy.dtype == np.uint16 else image_numpy
                 img_path = os.path.join(self.img_dir, 'epoch%.3d_%s.png' % (epoch, label))
                 util.save_image(image_numpy, img_path)
 
@@ -176,8 +184,10 @@ class Visualizer():
                 webpage.add_header('epoch [%d]' % n)
                 ims, txts, links = [], [], []
 
-                for label, image_numpy in visuals.items():
-                    image_numpy = util.tensor2im(image)
+                for label, image in visuals.items():
+                    image_numpy = util.tensor2im(image, np.uint16)
+                    image_numpy = self.tviz.viz_traj_from_vecseq_img(image_numpy) if self.is_vector_mode and (label.find("_B") > 0) else image_numpy
+                    image_numpy = (image_numpy / 255.0).astype(np.uint8) if image_numpy.dtype == np.uint16 else image_numpy
                     img_path = 'epoch%.3d_%s.png' % (n, label)
                     ims.append(img_path)
                     txts.append(label)

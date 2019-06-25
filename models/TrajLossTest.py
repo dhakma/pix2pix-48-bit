@@ -1,6 +1,7 @@
 from models.TrajLoss import TrajLoss
 import numpy as np
 from util import util, html
+from traj.TrajViz import TrajViz
 
 if __name__ == '__main__':
     tl = TrajLoss()
@@ -27,6 +28,13 @@ if __name__ == '__main__':
         if not np.allclose(traj, retrieved_trajs[k], 1e-5, 1e-4):
             print(np.hstack((traj, retrieved_trajs[k])))
     util.save_image_cv2(tl.traj2im(retrieved_trajs), 'test-vec2traj.png')
+
+    viz = TrajViz()
+    util.save_image_cv2(viz.viz_traj(trajs), 'test-traj-viz.png')
+    util.save_image_cv2(viz.viz_traj(retrieved_trajs), 'test-retrieved-traj-viz.png')
+    v1_viz = viz.viz_traj_from_vecseq_img(tl.traj2im(v1))
+    util.save_image_cv2(viz.viz_traj(trajs), 'test-v1-viz.png')
+
 
 
 
