@@ -1,6 +1,6 @@
 import os.path
 import random
-from data.base_dataset import BaseDataset, get_params, get_transform, get_transform_cv2
+from data.base_dataset import BaseDataset, get_params, get_transform, get_transform_cv2, get_transform_vecseq
 import torchvision.transforms as transforms
 from data.image_folder import make_dataset
 from PIL import Image
@@ -10,6 +10,7 @@ import itertools
 import cv2
 import torch
 #from . import util, html
+from models import TrajLoss
 
 
 class AlignedDataset(BaseDataset):
@@ -31,6 +32,7 @@ class AlignedDataset(BaseDataset):
         assert(self.opt.load_size >= self.opt.crop_size)   # crop_size should be smaller than the size of loaded image
         self.input_nc = self.opt.output_nc if self.opt.direction == 'BtoA' else self.opt.input_nc
         self.output_nc = self.opt.input_nc if self.opt.direction == 'BtoA' else self.opt.output_nc
+        self.traj_loss = TrajLoss.TrajLoss()
 
     def __getitem__old(self, index):
         """Return a data point and its metadata information.
@@ -73,7 +75,7 @@ class AlignedDataset(BaseDataset):
 
         return {'A': A, 'B': B, 'A_paths': AB_path, 'B_paths': AB_path}
 
-    def __getitem__(self, index):
+    def __getitem__pos_(self, index):
         """Return a data point and its metadata information.
 
         Parameters:
@@ -171,6 +173,62 @@ class AlignedDataset(BaseDataset):
         #
         # rgb = B_numpy_conv[..., ::-1]
         # Image.fromarray((rgb/ 255.0).astype(np.uint8)).save(name + '_B-pil.' + ext);
+
+        return {'A': A, 'B': B, 'A_paths': AB_path, 'B_paths': AB_path}
+
+    def __getitem__(self, index):
+        """Return a data point and its metadata information.
+
+        Parameters:
+            index - - a random integer for data indexing
+
+        Returns a dictionary that contains A, B, A_paths and B_paths
+            A (tensor) - - an image in the input domain
+            B (tensor) - - its corresponding image in the target domain
+            A_paths (str) - - image paths
+            B_paths (str) - - image paths (same as A_paths)
+        """
+        # read a image given a random integer index
+        AB_path = self.AB_paths[index]
+        cv2_img = cv2.imread(AB_path, cv2.IMREAD_COLOR | cv2.IMREAD_ANYDEPTH);
+        #cv2_img = cv2.imread(AB_path, cv2.IMREAD_COLOR);
+
+        is_16_bit = cv2_img.dtype == np.uint16
+        depth_div_factor = 65535.0 if is_16_bit else 255.0
+        cv2_img = cv2_img.astype('float32')
+        cv2_img = cv2_img[..., ::-1]
+        # rgb = B_numpy_conv[..., ::-1]
+        ht, wd, channels = cv2_img.shape
+        half_wd = int(wd/2);
+
+        A_numpy = cv2_img[:, 0:half_wd, :] / depth_div_factor
+        B_numpy = cv2_img[:, half_wd:wd, :]
+
+        # A_traj = self.traj_loss.im2traj(A_numpy, is_16_bit)
+        # A_vecseq = self.traj_loss.traj2vecseq(A_traj)
+        # assert(len(A_traj) == len(A_vecseq))
+
+        # ONLY B is a sequence
+        B_traj = self.traj_loss.im2traj(B_numpy, is_16_bit)
+        B_vecseq = self.traj_loss.traj2vecseq(B_traj)
+        assert(len(B_traj) == len(B_vecseq))
+        B_vecseq_img = self.traj_loss.traj2im(B_vecseq).astype('float32') / depth_div_factor
+
+        A_transform = get_transform_cv2(self.opt)
+        B_transform = get_transform_cv2(self.opt)
+        # A_t = torch.from_numpy(A).double()
+
+        # A_vecseq_img = self.traj_loss.traj2im(A_vecseq)
+
+        A_torch = torch.from_numpy(A_numpy.transpose((2, 0, 1)))
+        B_torch = torch.from_numpy(B_vecseq_img.transpose((2, 0, 1)))
+
+        A = A_transform(A_torch)
+        B = B_transform(B_torch)
+
+        # A_numpy_conv = A.data.cpu().float().numpy()  # convert it into a numpy array
+        # B_numpy_conv = B.data.cpu().float().numpy()  # convert it into a numpy array
+
 
         return {'A': A, 'B': B, 'A_paths': AB_path, 'B_paths': AB_path}
 
