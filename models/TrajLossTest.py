@@ -20,8 +20,9 @@ if __name__ == '__main__':
     print('loss : ', tl.calc_vecseqloss(v2, v2))
     util.save_image_cv2(tl.traj2im(v1), 'test_vec.png');
 
-    start_poss = tl.extract_start_pos(trajs)
-    retrieved_trajs = tl.vecseq2traj(v1, start_poss);
+    # start_poss = tl.extract_start_pos(trajs)
+    # retrieved_trajs = tl.vecseq2traj(v1, start_poss);
+    retrieved_trajs = tl.vecseq2traj(v1);
     for k, traj in trajs.items():
         if not np.allclose(traj, retrieved_trajs[k], 1e-5, 1e-4):
             print(np.hstack((traj, retrieved_trajs[k])))

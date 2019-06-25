@@ -56,25 +56,42 @@ class TrajLoss:
         vecseq = {}
         for id, t in traj.items():
             if len(t) > 1:
-                vecseq[id] = t[1:] - t[:-1]
-                # print(id, vecseq[id])
+                # vecseq[id] = t[1:] - t[:-1]
+                s = t[0]
+                vecseq[id] = np.vstack((t[0], t[1:] - t[:-1]))
         return self.normalize(vecseq)
 
-    def vecseq2traj(self, vecseq, start_positions):
+    def vecseq2traj(self, vecseq):
         trajs = {}
         denorm_vecseq = self.denormalize(vecseq)
         for id, seq in denorm_vecseq.items():
-            if id not in start_positions:
-                raise ValueError(id + 'is missing. id has to be in start positions')
-            start_pos = start_positions[id]
-            traj = [start_pos]
-            prev_pos = start_pos
-            for i in range(len(seq)):
-                nxt_pos = prev_pos + seq[i]
-                traj.append(nxt_pos)
-                prev_pos = nxt_pos
+            traj = []
+            if (len(seq) > 0):
+                start_pos = seq[0]
+                traj = [start_pos]
+                prev_pos = start_pos
+                for i in range(1, len(seq)):
+                    nxt_pos = prev_pos + seq[i]
+                    traj.append(nxt_pos)
+                    prev_pos = nxt_pos
             trajs[id] = np.array(traj)
         return trajs
+
+    # def vecseq2traj(self, vecseq, start_positions):
+    #     trajs = {}
+    #     denorm_vecseq = self.denormalize(vecseq)
+    #     for id, seq in denorm_vecseq.items():
+    #         if id not in start_positions:
+    #             raise ValueError(id + 'is missing. id has to be in start positions')
+    #         start_pos = start_positions[id]
+    #         traj = [start_pos]
+    #         prev_pos = start_pos
+    #         for i in range(len(seq)):
+    #             nxt_pos = prev_pos + seq[i]
+    #             traj.append(nxt_pos)
+    #             prev_pos = nxt_pos
+    #         trajs[id] = np.array(traj)
+    #     return trajs
 
     def calc_vecseqloss(self, vseq1, vseq2):
         sum = 0

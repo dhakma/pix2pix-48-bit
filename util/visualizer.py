@@ -73,6 +73,7 @@ class Visualizer():
         self.port = opt.display_port
         self.saved = False
         self.is_16_bit = opt.is_16_bit
+        self.is_vector_mode = True
         if self.display_id > 0:  # connect to a visdom server given <display_port> and <display_server>
             import visdom
             self.ncols = opt.display_ncols
@@ -127,6 +128,7 @@ class Visualizer():
                 idx = 0
                 for label, image in visuals.items():
                     image_numpy = util.tensor2im(image)
+                    image_numpy = image_numpy if self.is_vector_mode else image_numpy
                     label_html_row += '<td>%s</td>' % label
                     images.append(image_numpy.transpose([2, 0, 1]))
                     idx += 1
